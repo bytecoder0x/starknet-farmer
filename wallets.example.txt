@@ -1,0 +1,3 @@
+# one Argent X private key per line, lines with # are ignored
+0xYOUR_STARKNET_PRIVATE_KEY_1
+0xYOUR_STARKNET_PRIVATE_KEY_2
