@@ -1,5 +1,6 @@
 import { Account, CallData, RpcProvider, SequencerProvider, ec, hash } from "starknet";
 import { config } from "../config";
+import { fromUint256 } from "../utils/amount";
 
 let provider: SequencerProvider | RpcProvider | undefined;
 
@@ -43,4 +44,14 @@ export async function isDeployed(address: string): Promise<boolean> {
     } catch {
         return false;
     }
+}
+
+export async function getBalance(address: string, token: string): Promise<bigint> {
+    const { result } = await getProvider().callContract({
+        contractAddress: token,
+        entrypoint: "balanceOf",
+        calldata: CallData.compile({ account: address }),
+    });
+
+    return fromUint256(result[0], result[1]);
 }
