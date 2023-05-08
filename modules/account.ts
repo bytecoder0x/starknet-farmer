@@ -1,5 +1,6 @@
 import { Account, CallData, RpcProvider, SequencerProvider, ec, hash } from "starknet";
 import { config } from "../config";
+import { log } from "../utils/log";
 import { fromUint256 } from "../utils/amount";
 
 let provider: SequencerProvider | RpcProvider | undefined;
@@ -44,6 +45,28 @@ export async function isDeployed(address: string): Promise<boolean> {
     } catch {
         return false;
     }
+}
+
+export async function deployAccount(privateKey: string): Promise<string> {
+    const publicKey = ec.starkCurve.getStarkKey(privateKey);
+    const account = getAccount(privateKey);
+    const constructorCalldata = argentConstructorCalldata(publicKey);
+
+    if (config.dryRun) {
+        log.info(`dry-run: deploy account ${account.address} with class ${config.argent.proxyClassHash}`);
+        log.info(`calldata: ${constructorCalldata.join(",")}`);
+
+        return "dry-run";
+    }
+
+    const { transaction_hash } = await account.deployAccount({
+        classHash: config.argent.proxyClassHash,
+        constructorCalldata,
+        addressSalt: publicKey,
+    });
+    await account.waitForTransaction(transaction_hash);
+
+    return transaction_hash;
 }
 
 export async function getBalance(address: string, token: string): Promise<bigint> {
