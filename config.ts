@@ -10,6 +10,7 @@ export const config = {
     },
     dex: {
         jediswap: "0x041fd22b238fa21cfcf5dd45a8548974d8263b3a531a60388411c5e230f97023",
+        tenkswap: "0x07a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1",
     },
     argent: {
         proxyClassHash: "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",
