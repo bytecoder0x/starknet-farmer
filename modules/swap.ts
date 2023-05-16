@@ -1,8 +1,9 @@
 import { Account, CallData } from "starknet";
 import { config } from "../config";
 import { log, walletTag } from "../utils/log";
+import { randomDelay } from "../utils/delay";
 import { fromUint256, fromWei, randomAmount, toUint256, toWei } from "../utils/amount";
-import { getProvider } from "./account";
+import { getBalance, getProvider } from "./account";
 
 export type Dex = "jediswap" | "tenkswap";
 
@@ -75,4 +76,19 @@ export async function randomSwap(account: Account, index: number): Promise<void>
     log.info(`${walletTag(index)} swap ${amountEth} ETH -> USDC on ${dex}`);
     const hash = await swap(account, dex, config.tokens.ETH, config.tokens.USDC, toWei(amountEth));
     log.success(`${walletTag(index)} tx: ${hash}`);
+
+    if (!config.modules.swapBack) {
+        return;
+    }
+    await randomDelay(config.delayBetweenTx[0], config.delayBetweenTx[1]);
+    const usdc = config.dryRun ? 0n : await getBalance(account.address, config.tokens.USDC);
+
+    if (usdc === 0n && !config.dryRun) {
+        log.warn(`${walletTag(index)} no USDC to swap back`);
+
+        return;
+    }
+    log.info(`${walletTag(index)} swap ${fromWei(usdc, 6)} USDC -> ETH on ${dex}`);
+    const backHash = await swap(account, dex, config.tokens.USDC, config.tokens.ETH, usdc);
+    log.success(`${walletTag(index)} tx: ${backHash}`);
 }
