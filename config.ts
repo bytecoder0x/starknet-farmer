@@ -22,7 +22,9 @@ export const config = {
     swapAmountEth: [0.001, 0.003],
     slippage: 0.01,                     // 1%
     liquidityAmountEth: [0.002, 0.004],
+    delayBetweenWallets: [60, 180],     // seconds
     delayBetweenTx: [15, 45],
-    modules: { liquidity: true, swapBack: true },
+    modules: { swap: true, liquidity: true, swapBack: true },
+    deployIfNeeded: true,
     dryRun: false,                      // only print, nothing is sent
 };

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "check": "ts-node main.ts check"
+    "check": "ts-node main.ts check",
+    "farm": "ts-node main.ts farm"
   },
   "keywords": [],
   "author": "",
