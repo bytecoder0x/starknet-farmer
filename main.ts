@@ -3,10 +3,11 @@ import { log, walletTag } from "./utils/log";
 import { randomDelay } from "./utils/delay";
 import { readWallets } from "./utils/wallets";
 import { toWei, randomAmount } from "./utils/amount";
-import { getAccount, isDeployed, deployAccount } from "./modules/account";
+import { getArgentAddress, getAccount, isDeployed, deployAccount } from "./modules/account";
 import { randomSwap } from "./modules/swap";
 import { addLiquidity } from "./modules/liquidity";
 import { checkWallet, printCheck, WalletInfo } from "./modules/check";
+import { bridgeToStarknet } from "./modules/bridge";
 
 const command = process.argv[2];
 
@@ -21,6 +22,25 @@ async function check(wallets: string[]) {
         }
     }
     printCheck(list);
+}
+
+async function bridge(wallets: string[]) {
+    for (let i = 0; i < wallets.length; i++) {
+        const tag = walletTag(i + 1);
+
+        try {
+            const address = getArgentAddress(wallets[i]);
+            const amount = randomAmount(config.bridgeAmountEth[0], config.bridgeAmountEth[1]);
+            const hash = await bridgeToStarknet(address, amount);
+            log.success(`${tag} bridge done, tx: ${hash}`);
+        } catch (e) {
+            log.error(`${tag} ${(e as Error).message}`);
+        }
+
+        if (i < wallets.length - 1) {
+            await randomDelay(config.delayBetweenWallets[0], config.delayBetweenWallets[1]);
+        }
+    }
 }
 
 async function farm(wallets: string[]) {
@@ -68,8 +88,8 @@ async function farm(wallets: string[]) {
 }
 
 async function main() {
-    if (command !== "check" && command !== "farm") {
-        console.log("usage: npm run check | farm");
+    if (command !== "check" && command !== "farm" && command !== "bridge") {
+        console.log("usage: npm run check | farm | bridge");
         return;
     }
 
@@ -81,6 +101,8 @@ async function main() {
     }
 
     if (command === "check") await check(wallets);
+
+    if (command === "bridge") await bridge(wallets);
 
     if (command === "farm") await farm(wallets);
 }

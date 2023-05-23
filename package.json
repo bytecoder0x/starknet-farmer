@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "check": "ts-node main.ts check",
-    "farm": "ts-node main.ts farm"
+    "farm": "ts-node main.ts farm",
+    "bridge": "ts-node main.ts bridge"
   },
   "keywords": [],
   "author": "",
