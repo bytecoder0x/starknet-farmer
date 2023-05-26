@@ -31,7 +31,7 @@ export function getArgentAddress(privateKey: string): string {
         0
     );
 
-    return address;
+    return "0x" + BigInt(address).toString(16).padStart(64, "0");
 }
 
 export function getAccount(privateKey: string): Account {
